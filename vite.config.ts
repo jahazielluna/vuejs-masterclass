@@ -13,7 +13,13 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    vue(),
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: (element: string) => element.startsWith('iconify-icon'),
+        },
+      },
+    }),
     vueJsx(),
     vueDevTools(),
     VueRouter(),
@@ -24,8 +30,6 @@ export default defineConfig({
     },
   },
   css: {
-    postcss: {
-      plugins: [tailwindcss, autoprefixer],
-    },
+    postcss: './postcss.config.js',
   },
 })
