@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { supabase } from '@/lib/supabaseClient';
-import { ref } from 'vue';
+import { h, ref } from 'vue';
 import type { Tables } from '../../../database/types';
+import type { ColumnDef } from '@tanstack/vue-table';
+import DataTable from '@/components/ui/data-table/DataTable.vue';
+import { RouterLink } from 'vue-router';
 
-let projects = ref<Tables<'projects'>[] | null>(null)
+const projects = ref<Tables<'projects'>[] | null>(null)
 ;(async ()=> {
   const { data, error } = await supabase.from('projects').select()
     if (error) console.error(error)
@@ -11,19 +14,35 @@ let projects = ref<Tables<'projects'>[] | null>(null)
     console.log('Projects: ', projects.value)
 })()
 
+const columns: ColumnDef<Tables<'projects'>>[] = [
+  {
+    accessorKey: 'name',
+    header: () => h('div', { class: 'text-left' }, 'Name'),
+
+  },
+  {
+    accessorKey: 'status',
+    header: () => h('div', { class: 'text-left' }, 'Status'),
+    
+  },
+  {
+    accessorKey: 'collaborators',
+    header: () => h('div', { class: 'text-left' }, 'Collaborators'),
+  }
+]
+
+
 
 </script>
 
 <template>
-    <div>
-      <h1>Projects Page</h1>
-      <RouterLink :to="{name: '/projects/[id]', params: {id: 1}}">Go to Project 1</RouterLink>
-      <ul>
-        <li v-for="project in projects" :key="project.id">
-          {{ project.name }}
-        </li>
-      </ul>
-    </div>
+   <DataTable v-if="projects" :columns="columns" :data="projects" >
+    <template #cell-name="{cell}">
+      <RouterLink :to="`/projects/${cell.row.original.slug}`">
+        {{ cell.getValue() }}
+      </RouterLink>
+    </template>
+   </DataTable>
 </template>
 
 <style scoped>
