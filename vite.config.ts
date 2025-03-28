@@ -37,9 +37,13 @@ export default defineConfig({
       imports: [
         'vue',
         VueRouterAutoImports,
+        {'pinia': ['defineStore', 'storeToRefs', 'acceptHMRUpdate']}
       ],
       dts: true,
       viteOptimizeDeps: true,
+      dirs: [
+        'src/store',
+      ],
     }),
     Components({
       
